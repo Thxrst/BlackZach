@@ -4,13 +4,16 @@ import time
 
 deck_copy = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
 the_deck = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
-deck_values = {'A':11,'K':13,'Q':12,'J':11,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'a':1}
+deck_values = {'A':11,'K':10,'Q':10,'J':10,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'a':1}
+#lowercase 'a' represents an Ace with a value of 1, while uppercase 'A' represents a value of 11
+#After each hand, the deck is "shuffled" and recompiled by copying the values of deck_copy to replace the exhausted list, the_deck
 
 my_hand = []
 dealers_hand = []
 my_value = []
 dealers_value = []
-
+### the 'hand' lists are used to represent printable values to show a player what they have and are used to identify keys in the {deck_values} dictionary
+### the value lists are used to hold the numeric value of each card, and are summed later in the program to identify proximity to 21
 
 
 
@@ -22,7 +25,7 @@ def start_game():
            'You must bet 50 to play a round, and you have the option to double the bet after the first cards are dealt'
            'Accumulate 1,500 coins to win the game.')
     start_choice()
-
+### initializes the game with simple description and then sends to start_choice
 
 def start_choice():
     the_deck = deck_copy.copy()
@@ -35,7 +38,7 @@ def start_choice():
         quit()
     else:
         start_choice()
-
+### allows users to quit or play
 
 
 
@@ -46,15 +49,10 @@ def grab_card():
     max_card = int(total_cards)
     draw = random.randint(0,max_card)
     card_name = the_deck[draw]
-    card_value = deck_values[card_name]
     the_deck.pop(draw)
     return(card_name)
-
-
-def discard(position):
-    the_deck.remove(position)
-
-
+### a function used often, that calculates the number of cards in the_deck and then randomly picks one
+# (as if the deck were shuffled) and then removes the card from the list and returns card_name
 
 
 
@@ -62,7 +60,6 @@ def dealer_draw():
     card = grab_card()
     dealers_hand.append(card)
     dealers_value.append(deck_values.get(card))
-    discard(card)
     time.sleep(.5)
     print('Dealer drew a',card)
     time.sleep(1)
@@ -71,11 +68,11 @@ def player_draw():
     card = grab_card()
     my_hand.append(card)
     my_value.append(deck_values.get(card))
-    discard(card)
     time.sleep(.5)
     print('You drew a',card)
     time.sleep(1)
-
+### used to call grab_card() and append the card name to your hand list and the card value to your value list
+# then prints a message telling you what card you've drawn
 
 def first_cards():
     player_draw()
@@ -83,7 +80,7 @@ def first_cards():
     dealer_draw()
     dealer_draw()
     on_the_table()
-
+### gives the player their first two cards and gives the dealer their first two cards (potentially one face down, unsure on blackjack rules)
 
 def on_the_table():
     print('\n\n\nYour Hand:',my_hand)
