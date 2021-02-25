@@ -2,8 +2,8 @@ import random
 import time
 
 
-player_bank = 500
-current_bet = 0
+player_bank = [0]
+current_bet = [0]
 
 
 
@@ -25,6 +25,7 @@ dealers_value = []
 
 
 def start_game():
+    player_bank[0] += 500
     print ('Welcome to BlackZach\'s Casino!\n'
            '-\n'
            'We\'ll start you with 500 coins.\n'
@@ -39,7 +40,6 @@ def start_choice():
     begin_game = input('\n\n'
           'Pay 50 coins to buy in? (y/n)\n')
     if begin_game == 'y':
-        player_bank = player_bank - 50
         its_showtime()
     elif begin_game == 'n':
         print('You started with 500 coins and you\'re leaving with',player_bank,'\n***IMPRESSIVE!***\n')
@@ -82,20 +82,21 @@ def player_draw():
 # then prints a message telling you what card you've drawn
 
 def first_cards():
+
     player_draw()
     player_draw()
     dealer_draw()
     dealer_draw()
     double = input('Would you like to double down? (y/n)\n')
-    if double == 'y' or 'Y':
-        current_bet = 100
-        player_bank = player_bank - 100
-    elif double == 'n' or 'N':
-        current_bet == 50
-        player_bank = player_bank - 50
+    if double == 'y':
+        current_bet[0] = 100
+        player_bank[0] -= 100
+    elif double == 'n':
+        current_bet[0] = 50
+        player_bank[0] -= 50
     else:
-        current_bet == 50
-        player_bank = player_bank - 50
+        current_bet[0] = 50
+        player_bank[0] -= 50
         # if somehow they screw up this simple input they're probably not smart enough to know when to double down, so i force it
     on_the_table()
     show_bet()
@@ -113,6 +114,7 @@ def on_the_table():
 
 def show_bet():
     print('\nCurrent bet:',current_bet)
+    print(player_bank)
     
 def ace_check(list,dict):
     if 'A' in list:
@@ -177,7 +179,7 @@ def dealers_turn():
         dealers_turn()
     elif d > 16 & d < 21:
         ace_check(dealers_hand,dealers_value)
-        if d > 16 & < 21:
+        if d > 16 & d < 21:
             who_wins()
         elif d < 17:
             dealers_turn()
@@ -219,17 +221,17 @@ def who_wins():
 def player_wins():
     print('\n***You Win!***\n')
     time.sleep(1)
-    print('+',current_bet)
-    player_bank = player_bank + current_bet + current_bet
-    current_bet = 0
+    print('+',current_bet[0])
+    player_bank[0] = player_bank[0] + current_bet[0] + current_bet[0]
+    current_bet[0] = 0
     time.sleep(2)
     restart()
 
 def dealer_wins():
     print('\n***Dealer Wins!***\n')
     time.sleep(1)
-    print('-',current_bet)
-    current_bet = 0
+    print('-',current_bet[0])
+    current_bet[0] = 0
     time.sleep(2)
     restart()
 
@@ -237,8 +239,8 @@ def draw():
     print('***It\'s a Draw!***')
     time.sleep(1)
     print('Bet Returned')
-    player_bank = player_bank + current_bet
-    current_bet = 0
+    player_bank[0] = player_bank[0] + current_bet[0]
+    current_bet[0] = 0
     time.sleep(2)
     restart()
 ### simple win conditions with restart
