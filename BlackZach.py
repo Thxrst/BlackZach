@@ -88,7 +88,8 @@ def on_the_table():
     time.sleep(2)
     print('\nDealer\'s Hand:',dealers_hand)
     print(sum(dealers_value))
-
+### function to show the player and dealer's hands during play (might need to remove the showing of one of the dealer's cards
+    
 
 def ace_check(list,dict):
     if 'A' in list:
@@ -100,7 +101,7 @@ def ace_check(list,dict):
         ace_check(list,dict)
     else:
         pass
-
+### checks for aces when a player busts, if there is one, it replaces the value of 11 with the value of 1
 
 
 
@@ -140,7 +141,8 @@ def hit_stay():
         print('Invalid Input: Try again...\n')
         time.sleep(2)
         hit_stay()
-
+### this function offers the player an opportunity to add new cards to their hand or stay.  This function also stops the player 
+# when they bust or hit 21
 
 
 
@@ -165,7 +167,10 @@ def dealers_turn():
             dealers_turn()
         elif sum(dealers_value) > 21:
             who_wins()
-
+### this function activates after the player busts, gets blackjack, or stays. forces the dealer to draw until the value of cards exceeds 17.
+# apparently true blackjack would suggest that a dealer hand 17 or over with an ACE needs to continue drawing, might add that later.
+          
+            
 
 def who_wins():
     p = sum(my_value)
@@ -178,7 +183,10 @@ def who_wins():
         dealer_wins()
     elif d == p:
         draw()
-
+### determines the winner of the game, might need to add certain end game scenarios. Might also need to reflect rule that states
+# 21 vs 21 is a draw, but getting dealt a 21 off rip is a win for the player.
+        
+        
 def player_wins():
     print('\n***You Win!***\n')
     time.sleep(2)
@@ -193,7 +201,7 @@ def draw():
     print('***It\'s a Draw!***')
     time.sleep(2)
     restart()
-
+### simple win conditions with restart
 
 
 
@@ -201,11 +209,12 @@ def draw():
 def its_showtime():
     first_cards()
     hit_stay()
-
+### dictates order of events with larger functions
 
 def restart():
     the_deck = deck_copy.copy()
     start_choice()
-
+### resets the_deck list and restarts the function chain
 
 start_game()
+### calls the game start function
