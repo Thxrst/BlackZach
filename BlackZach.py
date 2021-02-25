@@ -86,7 +86,19 @@ def first_cards():
     player_draw()
     dealer_draw()
     dealer_draw()
+    double = input('Would you like to double down? (y/n)\n')
+    if double == 'y' or 'Y':
+        current_bet = 100
+        player_bank = player_bank - 100
+    elif double == 'n' or 'N':
+        current_bet == 50
+        player_bank = player_bank - 50
+    else:
+        current_bet == 50
+        player_bank = player_bank - 50
+        # if somehow they screw up this simple input they're probably not smart enough to know when to double down, so i force it
     on_the_table()
+    show_bet()
 ### gives the player their first two cards and gives the dealer their first two cards (potentially one face down, unsure on blackjack rules)
 
 def on_the_table():
@@ -95,12 +107,13 @@ def on_the_table():
     time.sleep(2)
     print('\nDealer is showing a',dealers_hand[0])
     print(sum(dealers_value))
-    print('\n',current_bet)
 ### function to show the player and dealer's hands during play (might need to remove the showing of one of the dealer's cards)
 ### removed the dealer's hand showing two cards
-### added print current bet at bottom of function
     
 
+def show_bet():
+    print('\nCurrent bet:',current_bet)
+    
 def ace_check(list,dict):
     if 'A' in list:
         list.pop('A')
@@ -205,19 +218,31 @@ def who_wins():
         
 def player_wins():
     print('\n***You Win!***\n')
+    time.sleep(1)
+    print('+',current_bet)
+    player_bank = player_bank + current_bet + current_bet
+    current_bet = 0
     time.sleep(2)
     restart()
 
 def dealer_wins():
     print('\n***Dealer Wins!***\n')
+    time.sleep(1)
+    print('-',current_bet)
+    current_bet = 0
     time.sleep(2)
     restart()
 
 def draw():
     print('***It\'s a Draw!***')
+    time.sleep(1)
+    print('Bet Returned')
+    player_bank = player_bank + current_bet
+    current_bet = 0
     time.sleep(2)
     restart()
 ### simple win conditions with restart
+### added function to pay out correct bets
 
 
 
