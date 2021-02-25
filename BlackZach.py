@@ -2,6 +2,13 @@ import random
 import time
 
 
+player_bank = 500
+current_bet = 0
+
+
+
+
+
 deck_copy = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
 the_deck = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
 deck_values = {'A':11,'K':10,'Q':10,'J':10,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'a':1}
@@ -30,11 +37,12 @@ def start_game():
 def start_choice():
     the_deck = deck_copy.copy()
     begin_game = input('\n\n'
-          'Would you like to play? (y/n)\n')
+          'Pay 50 coins to buy in? (y/n)\n')
     if begin_game == 'y':
+        player_bank = player_bank - 50
         its_showtime()
     elif begin_game == 'n':
-        print('Thanks for stopping by, see you next time!')
+        print('You started with 500 coins and you\'re leaving with',player_bank,'\n***IMPRESSIVE!***\n')
         quit()
     else:
         start_choice()
@@ -60,10 +68,9 @@ def dealer_draw():
     card = grab_card()
     dealers_hand.append(card)
     dealers_value.append(deck_values.get(card))
-    time.sleep(.5)
-    print('Dealer drew a',card)
     time.sleep(1)
 
+    
 def player_draw():
     card = grab_card()
     my_hand.append(card)
@@ -86,9 +93,12 @@ def on_the_table():
     print('\n\n\nYour Hand:',my_hand)
     print(sum(my_value))
     time.sleep(2)
-    print('\nDealer\'s Hand:',dealers_hand)
+    print('\nDealer is showing a',dealers_hand[0])
     print(sum(dealers_value))
-### function to show the player and dealer's hands during play (might need to remove the showing of one of the dealer's cards
+    print('\n',current_bet)
+### function to show the player and dealer's hands during play (might need to remove the showing of one of the dealer's cards)
+### removed the dealer's hand showing two cards
+### added print current bet at bottom of function
     
 
 def ace_check(list,dict):
@@ -148,28 +158,34 @@ def hit_stay():
 
 
 def dealers_turn():
-    if sum(dealers_value) < 17:
+    d = sum(dealers_value)
+    if d < 17:
         dealer_draw()
         dealers_turn()
-    elif sum(dealers_value) > 17 & sum(dealers_value) < 21:
-        who_wins()
-    elif sum(dealers_value) == 21:
-        print('BLACKJACK')
-        time.sleep(.5)
-        print('BLACKJACK')
-        time.sleep(.5)
-        print('BLACKJACK')
-        time.sleep(.5)
-        who_wins()
-    elif sum(dealers_value) > 21:
+    elif d > 16 & d < 21:
         ace_check(dealers_hand,dealers_value)
-        if sum(dealers_value) < 22:
+        if d > 16 & < 21:
+            who_wins()
+        elif d < 17:
             dealers_turn()
-        elif sum(dealers_value) > 21:
+    elif d == 21:
+        print('BLACKJACK')
+        time.sleep(.5)
+        print('BLACKJACK')
+        time.sleep(.5)
+        print('BLACKJACK')
+        time.sleep(.5)
+        who_wins()
+    elif d > 21:
+        ace_check(dealers_hand,dealers_value)
+        if d < 22:
+            dealers_turn()
+        elif d > 21:
             who_wins()
 ### this function activates after the player busts, gets blackjack, or stays. forces the dealer to draw until the value of cards exceeds 17.
 # apparently true blackjack would suggest that a dealer hand 17 or over with an ACE needs to continue drawing, might add that later.
-          
+### added ace check for the 17-20 range so dealer will continue drawing on a soft 17,18,19 and 20. 
+# (soft is when the hand contains an ace with a value of 11, because that hand can never bust in one hit)
             
 
 def who_wins():
