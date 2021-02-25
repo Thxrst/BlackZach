@@ -11,8 +11,8 @@ current_bet = [0]
 
 deck_copy = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
 the_deck = ['A','A','A','A','K','K','K','K','Q','Q','Q','Q','J','J','J','J','2','2','2','2','3','3','3','3','4','4','4','4','5','5','5','5','6','6','6','6','7','7','7','7','8','8','8','8','9','9','9','9','10','10','10','10']
-deck_values = {'A':11,'K':10,'Q':10,'J':10,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'a':1}
-#lowercase 'a' represents an Ace with a value of 1, while uppercase 'A' represents a value of 11
+deck_values = {'A':11,'K':10,'Q':10,'J':10,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'X':1}
+# X represents an Ace with a value of 1, while uppercase 'A' represents a value of 11
 #After each hand, the deck is "shuffled" and recompiled by copying the values of deck_copy to replace the exhausted list, the_deck
 
 my_hand = []
@@ -36,16 +36,14 @@ def start_game():
 ### initializes the game with simple description and then sends to start_choice
 
 def start_choice():
-    the_deck = deck_copy.copy()
-    begin_game = input('\n\n'
-          'Pay 50 coins to buy in? (y/n)\n')
-    if begin_game == 'y':
-        its_showtime()
-    elif begin_game == 'n':
-        print('You started with 500 coins and you\'re leaving with',player_bank,'\n***IMPRESSIVE!***\n')
-        quit()
-    else:
-        start_choice()
+    while True:
+        begin_game = input('\n\n'
+              'Pay 50 coins to buy in? (y/n)\n')
+        if begin_game == 'y':
+            its_showtime()
+        elif begin_game == 'n':
+            print('You started with 500 coins and you\'re leaving with',player_bank,'\n***IMPRESSIVE!***\n')
+            quit()
 ### allows users to quit or play
 
 
@@ -65,10 +63,10 @@ def grab_card():
 
 
 def dealer_draw():
+    print('dealer draw activated')
     card = grab_card()
     dealers_hand.append(card)
     dealers_value.append(deck_values.get(card))
-    time.sleep(1)
 
     
 def player_draw():
@@ -77,7 +75,6 @@ def player_draw():
     my_value.append(deck_values.get(card))
     time.sleep(.5)
     print('You drew a',card)
-    time.sleep(1)
 ### used to call grab_card() and append the card name to your hand list and the card value to your value list
 # then prints a message telling you what card you've drawn
 
@@ -87,6 +84,7 @@ def first_cards():
     player_draw()
     dealer_draw()
     dealer_draw()
+    on_the_table()
     double = input('Would you like to double down? (y/n)\n')
     if double == 'y':
         current_bet[0] = 100
@@ -98,14 +96,12 @@ def first_cards():
         current_bet[0] = 50
         player_bank[0] -= 50
         # if somehow they screw up this simple input they're probably not smart enough to know when to double down, so i force it
-    on_the_table()
     show_bet()
 ### gives the player their first two cards and gives the dealer their first two cards (potentially one face down, unsure on blackjack rules)
 
 def on_the_table():
     print('\n\n\nYour Hand:',my_hand)
     print(sum(my_value))
-    time.sleep(2)
     print('\nDealer is showing a',dealers_hand[0])
     print(sum(dealers_value))
 ### function to show the player and dealer's hands during play (might need to remove the showing of one of the dealer's cards)
@@ -116,24 +112,37 @@ def show_bet():
     print('\nCurrent bet:',current_bet)
     print(player_bank)
     
-def ace_check(list,dict):
+def ace_check(list,list2):
     if 'A' in list:
-        list.pop('A')
-        list.append('a')
+        list.remove('A')
+        list.append('X')
+        list2.append(-10)
     else:
-        pass
-    if sum(dict) > 21:
-        ace_check(list,dict)
-    else:
-        pass
+        return
 ### checks for aces when a player busts, if there is one, it replaces the value of 11 with the value of 1
+
+
+def dealers_turn():
+    while sum(dealers_value) < 17:
+        dealer_draw()
+
+
+
+
+
+
+
+### this function activates after the player busts, gets blackjack, or stays. forces the dealer to draw until the value of cards exceeds 17.
+# apparently true blackjack would suggest that a dealer hand 17 or over with an ACE needs to continue drawing, might add that later.
+### added ace check for the 17-20 range so dealer will continue drawing on a soft 17,18,19 and 20.
+# (soft is when the hand contains an ace with a value of 11, because that hand can never bust in one hit)
+
 
 
 
 
 
 def hit_stay():
-    time.sleep(2)
     choice = input('\n\n--Hit (h) or Stay (s)?--\n')
     if choice == 'h':
         player_draw()
@@ -147,24 +156,19 @@ def hit_stay():
                 hit_stay()
             elif sum(my_value) > 21:
                 print('\nBUST\n')
-                dealers_turn()
-            return
+                return
         elif value == 21:
             print('BLACKJACK\n')
-            time.sleep(2)
             print('Let\'s see what the Dealer has...')
-            dealers_turn()
             return
         hit_stay()
     elif choice == 's':
         print('\nStayed.\n')
         time.sleep(1)
         print('Dealer\'s Turn...')
-        time.sleep(2)
-        dealers_turn()
+        return
     else:
         print('Invalid Input: Try again...\n')
-        time.sleep(2)
         hit_stay()
 ### this function offers the player an opportunity to add new cards to their hand or stay.  This function also stops the player 
 # when they bust or hit 21
@@ -172,45 +176,17 @@ def hit_stay():
 
 
 
-def dealers_turn():
-    d = sum(dealers_value)
-    if d < 17:
-        dealer_draw()
-        dealers_turn()
-    elif d > 16 & d < 21:
-        ace_check(dealers_hand,dealers_value)
-        if d > 16 & d < 21:
-            who_wins()
-        elif d < 17:
-            dealers_turn()
-    elif d == 21:
-        print('BLACKJACK')
-        time.sleep(.5)
-        print('BLACKJACK')
-        time.sleep(.5)
-        print('BLACKJACK')
-        time.sleep(.5)
-        who_wins()
-    elif d > 21:
-        ace_check(dealers_hand,dealers_value)
-        if d < 22:
-            dealers_turn()
-        elif d > 21:
-            who_wins()
-### this function activates after the player busts, gets blackjack, or stays. forces the dealer to draw until the value of cards exceeds 17.
-# apparently true blackjack would suggest that a dealer hand 17 or over with an ACE needs to continue drawing, might add that later.
-### added ace check for the 17-20 range so dealer will continue drawing on a soft 17,18,19 and 20. 
-# (soft is when the hand contains an ace with a value of 11, because that hand can never bust in one hit)
+
             
 
 def who_wins():
     p = sum(my_value)
     d = sum(dealers_value)
-    if p < 22 & p > d:
+    if p < 22 and p > d:
         player_wins()
-    elif d < 22 & d > p:
+    elif d < 22 and d > p:
         dealer_wins()
-    elif d > 21 & p > 21:
+    elif d > 21 and p > 21:
         dealer_wins()
     elif d == p:
         draw()
@@ -252,10 +228,16 @@ def draw():
 def its_showtime():
     first_cards()
     hit_stay()
+    dealers_turn()
+    who_wins()
 ### dictates order of events with larger functions
 
 def restart():
     the_deck = deck_copy.copy()
+    my_hand.clear()
+    my_value.clear()
+    dealers_hand.clear()
+    dealers_value.clear()
     start_choice()
 ### resets the_deck list and restarts the function chain
 
